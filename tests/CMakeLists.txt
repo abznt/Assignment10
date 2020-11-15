@@ -30,5 +30,5 @@ if (CMAKE_VERSION VERSION_LESS 2.8.11)
     include_directories("${gtest_SOURCE_DIR}/include")
 endif()
 
-add_executable(UnitTest test.cpp)
-target_link_libraries(UnitTest gtest_main Statistics)
+add_executable(UnitTest PassengerTests.cpp)
+target_link_libraries(UnitTest gtest_main elevatorsimulation)

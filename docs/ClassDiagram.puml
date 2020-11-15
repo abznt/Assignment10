@@ -1,0 +1,61 @@
+@startuml
+
+skinparam ClassBorderColor black
+skinparam ClassBackgroundColor white
+
+enum ElevatorState {
+    STOPPED
+    STOPPING
+    MOVING_UP
+    MOVING_DOWN
+}
+hide ElevatorState methods
+
+class Elevator {
+    -ElevatorState _currentState
+    -int _timeInCurrentState
+    -shared_ptr<Floor> _currentFloor
+    -vector<unique_ptr<Passenger>> _passengers
+    -int _nPassengers
+    -int _maxPassengers
+    +Elevator(int maxPassengers)
+    +modelTick()
+    -loadPassenger()
+    -unloadPassenger()
+}
+
+class Passenger {
+    -int arrivalTime
+    -int waitTime
+    -int travelTime
+    +Passenger(int arrivalTime,
+        \tint destinationFloor)
+    +int getArrivalTime()
+    +int getDestinationFloor()
+    +void stopWaiting()
+    +void startTravelling()
+    +void stopTravelling()
+}
+
+class ArrivalTimePriority <<S, orchid>> {
+    +bool operator()(unique_ptr<Passenger> p1,
+        \tunique_ptr<Passenger> p2)
+}
+hide ArrivalTimePriority attributes
+
+class Floor {
+    -const int _floorNumber
+    -priority_queue<unique_ptr<Passenger>,
+        \tvector<unique_ptr<Passenger>,
+        \tArrivalTimePriority> _passengerQueue
+    +Floor(int floorNumber)
+
+}
+
+class ElevatorSimulation {
+
+}
+
+
+
+@enduml
