@@ -11,51 +11,113 @@ enum ElevatorState {
 }
 hide ElevatorState methods
 
+class Building {
+    +const unsigned nFloors
+    +const unsigned nElevators
+    -vector<Floor> _floors
+    -vector<Elevator> _elevators
+    -unsigned _simTime
+    static constexpr unsigned ELEVATOR_CAPACITY = 8
+    +Building(unsigned nFloors, unsigned nElevators,
+        \tunsigned elevatorTravelTime)
+    +void passengerArrivedAtFloor(unique_ptr<Passenger> p,
+        \tunsigned floorNumber)
+    +void modelTick()
+    +Floor& floorAt(unsigned floorNumber)
+    -bool inBounds(unsigned floorNumber)
+}
+
 class Elevator {
-    -ElevatorState _currentState
-    -int _timeInCurrentState
-    -shared_ptr<Floor> _currentFloor
+    +const unsigned uid
+    -ElevatorState _curState
+    -unsigned _timeInCurrentState
+    -const unsigned _capacity
+    -const unsigned _travelTime
     -vector<unique_ptr<Passenger>> _passengers
-    -int _nPassengers
-    -int _maxPassengers
-    +Elevator(int maxPassengers)
-    +modelTick()
-    -loadPassenger()
-    -unloadPassenger()
+    -unsigned _curFloor
+    -Building* _building
+    -unsigned _simTime
+    -int _destinationFloor
+    -static unsigned _uidCounter
+    -static int _passengersInElevators;
+    -static constexpr unsigned STOPPING_TIME = 2
+    +Elevator(Building* building, const unsigned capacity,
+        \tconst unsigned travelTime, const unsigned curFloor)
+    +~Elevator()
+    +Elevator(Elevator &&e)
+    +void modelTick()
+    +static int numPassengersInElevators()
+    -int findNearestNewPassenger() const
+    -unsigned findClosestPassengerDestination() const
+    -void pickupPassengers()
+    -void dropoffPassengers()
+    -bool canPickupPassengers()
+    -bool canDropoffPassengers()
+    -void logCurrentPassengers()
 }
 
 class Passenger {
-    -int arrivalTime
-    -int waitTime
-    -int travelTime
-    +Passenger(int arrivalTime,
-        \tint destinationFloor)
-    +int getArrivalTime()
-    +int getDestinationFloor()
-    +void stopWaiting()
-    +void startTravelling()
-    +void stopTravelling()
+    +const unsigned uid
+    -const unsigned _arrivalTime
+    -const unsigned _destinationFloor
+    -unsigned _waitTime
+    -unsigned _travelTime
+    -static unsigned int _uidCounter
+    -shared_ptr<ElevatorSimulationResults> _results
+    +Passenger(unsigned arrivalTime, unsigned destinationFloor,
+        \tshared_ptr<ElevatorSimulationResults> results)
+    +unsigned getArrivalTime() const
+    +unsigned getDestinationFloor() const
+    +unsigned getWaitTime() const
+    +unsigned getTravelTime() const
+    +void startTraveling(unsigned simulationTime)
+    +void stopTraveling(unsigned simulationTime)
 }
-
-class ArrivalTimePriority <<S, orchid>> {
-    +bool operator()(unique_ptr<Passenger> p1,
-        \tunique_ptr<Passenger> p2)
-}
-hide ArrivalTimePriority attributes
 
 class Floor {
-    -const int _floorNumber
-    -priority_queue<unique_ptr<Passenger>,
-        \tvector<unique_ptr<Passenger>,
-        \tArrivalTimePriority> _passengerQueue
-    +Floor(int floorNumber)
-
+    -const unsigned _floorNumber
+    -queue<unique_ptr<Passenger>> _passengerQueue
+    -static int _passengersOnFloors
+    +Floor(unsigned floorNumber)
+    +Floor(Floor&& floor)
+    +passengerArrived(unique_ptr<Passenger> p)
+    +unique_ptr<Passenger> passengerDeparted()
+    +size_t nPassengersWaiting() const
+    +bool empty() const
+    +static int numPassengersOnFloors()
 }
 
 class ElevatorSimulation {
-
+    -Building _building
+    -shared_ptr<ElevatorSimulationResults> _results
+    -queue<pair<int, unique_ptr<Passenger>>>
+        \t_passengerQueueInput
+    -size_t _nPassengers
+    -unsigned _simTime;
+    +ElevatorSimulation(unsigned elevatorTravelTime,
+        \tconst string& inputFile)
+    +shared_ptr<ElevatorSimulationResults> simulate()
+    -bool stoppingCondition() const
+    -void loadInputFile(const string& inputFile)
 }
 
+class ElevatorSimulationResults {
+    -vector<unsigned> _waitTimes
+    -vector<unsigned> _travelTimes
+    +void addResult(unsigned waitTime, unsigned travelTime)
+    +size_t numResults() const
+    +double avgWaitTime() const
+    +double avgTravelTime() const
+}
 
+ElevatorSimulation "1" *-- "1" Building
+Building "1" *-- "1.." Elevator
+Building "1" *-- "1.." Floor
+Passenger o- Elevator
+Passenger o- Floor
+Passenger o- ElevatorSimulation
+ElevatorState <- Elevator
+ElevatorSimulation -> ElevatorSimulationResults
+Passenger -> ElevatorSimulationResults
 
 @enduml

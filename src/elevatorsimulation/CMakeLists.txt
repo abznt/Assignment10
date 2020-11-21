@@ -8,7 +8,7 @@ set(sources
         ElevatorSimulationResults.cpp
         ElevatorSimulationResults.h
         ElevatorState.h
-        ArrivalTimePriority.h Floor.cpp Floor.h Building.cpp Building.h)
+        Floor.cpp Floor.h Building.cpp Building.h ElevatorSimulation.cpp ElevatorSimulation.h)
 
 add_library(${libname} STATIC ${sources})
 target_include_directories(${libname} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

@@ -10,7 +10,8 @@ Passenger::Passenger(const unsigned int arrivalTime, const unsigned int destinat
         uid{_uidCounter++}, _arrivalTime{arrivalTime}, _destinationFloor{destinationFloor}, _waitTime{0}, _travelTime{0}
 {
     _results = results;
-    BOOST_LOG_TRIVIAL(debug) << "Created Passsenger with UID = " << uid;
+    BOOST_LOG_TRIVIAL(debug) << "Created Passsenger " << uid << " with arrival time " << _arrivalTime
+        << " and destination floor " << _destinationFloor;
 }
 
 void Passenger::startTraveling(unsigned int currentTime)
